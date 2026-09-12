@@ -1,0 +1,21 @@
+<%
+    from middlewared.utils import filter_list
+
+    users = filter_list(render_ctx['user.query'], [], {'order_by': ['-builtin', 'uid']})
+
+    def get_passwd(user):
+        if user['password_disabled']:
+            return "*"
+        elif user['locked']:
+            return "*LOCKED*"
+
+        return  user['unixhash']
+%>\
+% for u in users:
+${u['username']}:${get_passwd(u)}:${u['uid']}:${u['group']['bsdgrp_gid']}::0:0:${u['full_name']}:${u['home']}:${u['shell']}
+% endfor
+% if render_ctx['nis.config']['enable']:
+
++:::::::::\
+% endif
+
