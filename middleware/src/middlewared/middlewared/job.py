@@ -37,7 +37,7 @@ class JobSharedLock(object):
         self.name = name
         self.jobs = set()
         # Once we upgrade to python 3.10 and it starts crashing here, just revert a commit that introduced `loop=loop`
-        self.lock = asyncio.Lock(loop=loop)
+        self.lock = asyncio.Lock()
 
     def add_job(self, job):
         self.jobs.add(job)
@@ -209,7 +209,7 @@ class Job(object):
     """
 
     def __init__(self, middleware, method_name, serviceobj, method, args, options, pipes, on_progress_cb):
-        self._finished = asyncio.Event(loop=middleware.loop)
+        self._finished = asyncio.Event()
         self.middleware = middleware
         self.method_name = method_name
         self.serviceobj = serviceobj

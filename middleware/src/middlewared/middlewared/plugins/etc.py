@@ -86,6 +86,8 @@ class PyRenderer(object):
     async def render(self, path, ctx):
         name = os.path.basename(path)
         spec = importlib.util.spec_from_file_location(name, path)
+        if spec is None and not path.endswith('.py') and os.path.exists(path + '.py'):
+            spec = importlib.util.spec_from_file_location(name, path + '.py')
         mod = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(mod)
         args = [self.service, self.service.middleware]
