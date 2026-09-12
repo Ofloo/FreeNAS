@@ -1,0 +1,36 @@
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "outDir": "./dist/out-tsc",
+    "baseUrl": "src",
+    "sourceMap": true,
+    "declaration": false,
+    "moduleResolution": "node",
+    "experimentalDecorators": true,
+    "target": "es2016",
+    "allowSyntheticDefaultImports": true,
+    "lib": [
+      "es2016",
+      "dom",
+      "es2017.object",
+      "es2016.array.include"
+    ],
+    "module": "es2015"
+  },
+  "angularCompilerOptions": {
+    "enableIvy": true,
+    "allowEmptyCodegenFiles": true
+  },
+  "include": [
+    "src/main.ts",
+    "src/polyfills.ts",
+    "src/environments/environment.ts",
+    "src/**/*.component.ts",
+    "src/**/*.module.ts",
+    "src/**/*.routes.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "**/*.spec.ts"
+  ]
+}

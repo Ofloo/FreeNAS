@@ -1,0 +1,14 @@
+name: CI
+on: [pull_request]
+jobs:
+  build:
+    name: Yarn Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
+      - run: yarn
+      - run: yarn extract
+      - run: yarn build:prod:aot

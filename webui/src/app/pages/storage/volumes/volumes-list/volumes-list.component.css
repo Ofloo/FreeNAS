@@ -1,0 +1,95 @@
+/deep/ #tree-list-demo {
+    min-height: 530px;   
+}
+
+/deep/ #employees {
+   max-height: 530px;
+}
+
+.hov:hover{
+    cursor: pointer;
+}
+
+.ion-android-more-vertical:before {
+    color: black;
+}
+
+
+:host ::ng-deep .global_volume_based_action_menu .panel_container {
+  text-align:right;
+}
+
+.panel_status_enc {
+    font-size: 16px;
+    padding-left: 4px;
+}
+
+.encryption_icon {
+    float: right; 
+    padding-bottom: 20px;
+    padding-top: 4px;
+    position:relative;
+    z-index:50;
+}
+
+.unlock_button {
+    cursor: pointer;
+}
+
+#pools-spinner {
+    position: absolute;
+    left: 47%;
+    top: 12px;
+}
+
+.pool-icon {
+    margin-left: 15px;
+    position: relative;
+    top: 10px;
+}
+
+.icon-row {
+    margin: -5px -5px 12px 0;
+}
+
+.green-icon {
+    color: var(--green);
+}
+
+.orange-icon {
+    color: var(--orange);
+}
+
+.yellow-icon {
+    color: var(--yellow);
+}
+
+.blue-icon {
+    color: var(--blue);
+}
+
+.red-icon {
+    color: var(--red);
+}
+
+.mat-expansion-panel-header-title {
+    max-width: 30%;
+    width: 30%;
+    min-width: 30%;
+}
+
+.mat-expansion-panel-header-title,
+.mat-expansion-panel-header-description{
+    position: relative;
+    top: 4px;
+    max-height: 24px;
+}
+
+.mat-expansion-panel-header.offline .mat-expansion-panel-header-title,
+.mat-expansion-panel-header.offline .mat-expansion-panel-header-description{
+    top: 12px;
+}
+
+.icons {
+    font-size: 24px; 
+}
