@@ -1,0 +1,17 @@
+--- lib/util/charset/wscript_configure.orig	2026-09-13 17:14:20.485031237 +0200
++++ lib/util/charset/wscript_configure	2026-09-13 17:47:11.592487901 +0200
+@@ -43,7 +43,13 @@
+                uselib_store='ICU_I18N'):
+     for lib in conf.env['LIB_ICU_I18N']:
+         conf.CHECK_LIB(lib, shlib=True, mandatory=True)
+-    conf.env['icu-libs'] = ' '.join(conf.env['LIB_ICU_I18N'])
++    conf.CHECK_CFG(package='icu-uc',
++                   args='--cflags --libs',
++                   msg='Checking for icu-uc',
++                   uselib_store='ICU_UC')
++    for lib in conf.env['LIB_ICU_UC']:
++        conf.CHECK_LIB(lib, shlib=True, mandatory=True)
++    conf.env['icu-libs'] = ' '.join(conf.env['LIB_ICU_I18N'] + conf.env['LIB_ICU_UC'])
+     if not conf.CHECK_HEADERS('unicode/ustring.h'):
+         conf.fatal('Found libicu, but unicode/ustring.h is missing')
+     conf.DEFINE('HAVE_UTF8_NORMALISATION', 1)

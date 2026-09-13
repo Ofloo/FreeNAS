@@ -1,6 +1,91 @@
---- source3/modules/wscript_build.orig	2025-02-06 10:31:54 UTC
-+++ source3/modules/wscript_build
-@@ -641,6 +641,13 @@ bld.SAMBA3_MODULE('vfs_delay_inject',
+--- source3/modules/wscript_build.orig	2026-09-13 11:37:28.556309000 +0200
++++ source3/modules/wscript_build	2026-09-13 11:37:28.583720000 +0200
+@@ -258,6 +258,84 @@
+                  init_function='',
+                  internal_module=bld.SAMBA3_IS_STATIC_MODULE('vfs_zfsacl'),
+                  enabled=bld.SAMBA3_IS_ENABLED_MODULE('vfs_zfsacl'))
++
++libzfs_cflags = '-DNEED_SOLARIS_BOOLEAN -DHAVE_STRLCAT -DHAVE_STRLCPY'
++if bld.CONFIG_SET('FREEBSD'):
++    libzfs_cflags += ' -DFREEBSD'
++
++bld.SAMBA3_LIBRARY('smb_libzfs',
++                   source='smb_libzfs.c',
++                   cflags_end=libzfs_cflags,
++                   deps='samba-util',
++                   includes=bld.CONFIG_GET('CPPPATH_ZFS'),
++                   ldflags='-luutil -lzfs_core -lzfs -lnvpair',
++                   enabled=bld.SAMBA3_IS_ENABLED_MODULE('vfs_zfs_core'),
++                   private_library=True)
++
++bld.SAMBA3_MODULE('vfs_tmprotect',
++                 subsystem='vfs',
++                 source='vfs_tmprotect.c',
++                 deps='smb_libzfs',
++                 init_function='',
++                 internal_module=bld.SAMBA3_IS_STATIC_MODULE('vfs_tmprotect'),
++                 enabled=bld.SAMBA3_IS_ENABLED_MODULE('vfs_tmprotect'))
++
++bld.SAMBA3_MODULE('vfs_zfs_core',
++                 subsystem='vfs',
++                 source='vfs_zfs_core.c',
++                 deps='smb_libzfs',
++                 init_function='',
++                 internal_module=bld.SAMBA3_IS_STATIC_MODULE('vfs_zfs_core'),
++                 enabled=bld.SAMBA3_IS_ENABLED_MODULE('vfs_zfs_core'))
++
++bld.SAMBA3_MODULE('vfs_zfs_fsrvp',
++                 subsystem='vfs',
++                 source='vfs_zfs_fsrvp.c',
++                 deps='smb_libzfs',
++                 init_function='',
++                 internal_module=bld.SAMBA3_IS_STATIC_MODULE('vfs_zfs_fsrvp'),
++                 enabled=bld.SAMBA3_IS_ENABLED_MODULE('vfs_zfs_fsrvp'))
++
++bld.SAMBA3_MODULE('vfs_shadow_copy_zfs',
++                 subsystem='vfs',
++                 source='vfs_shadow_copy_zfs.c',
++                 allow_warnings=True,
++                 deps='samba-util tdb smb_libzfs',
++                 init_function='',
++                 internal_module=bld.SAMBA3_IS_STATIC_MODULE('vfs_shadow_copy_zfs'),
++                 enabled=bld.SAMBA3_IS_ENABLED_MODULE('vfs_shadow_copy_zfs'))
++
++bld.SAMBA3_MODULE('vfs_aio_fbsd',
++                 subsystem='vfs',
++                 source='vfs_aio_fbsd.c',
++                 deps='samba-util tevent',
++                 init_function='',
++                 internal_module=bld.SAMBA3_IS_STATIC_MODULE('vfs_aio_fbsd'),
++                 enabled=bld.SAMBA3_IS_ENABLED_MODULE('vfs_aio_fbsd'))
++
++bld.SAMBA3_MODULE('vfs_ixnas',
++                 subsystem='vfs',
++                 source='vfs_ixnas.c',
++                 deps='NFS4_ACLS zfsacl smb_libzfs',
++                 init_function='',
++                 internal_module=bld.SAMBA3_IS_STATIC_MODULE('vfs_ixnas'),
++                 enabled=bld.SAMBA3_IS_ENABLED_MODULE('vfs_ixnas'))
++
++bld.SAMBA3_MODULE('vfs_zfs_space',
++                 subsystem='vfs',
++                 source='vfs_zfs_space.c',
++                 deps='smb_libzfs',
++                 allow_undefined_symbols=True,
++                 init_function='',
++                 internal_module=bld.SAMBA3_IS_STATIC_MODULE('vfs_zfs_space'),
++                 enabled=bld.SAMBA3_IS_ENABLED_MODULE('vfs_zfs_space'))
++
++bld.SAMBA3_MODULE('vfs_noacl',
++                 subsystem='vfs',
++                 source='vfs_noacl.c',
++                 internal_module=bld.SAMBA3_IS_STATIC_MODULE('vfs_noacl'),
++                 enabled=bld.SAMBA3_IS_ENABLED_MODULE('vfs_noacl'))
++
+ 
+ if bld.SAMBA3_IS_ENABLED_MODULE('vfs_nfs4acl_xattr'):
+     bld.SAMBA_GENERATOR('nfs41acl-h',
+@@ -641,6 +719,14 @@
                   enabled=bld.SAMBA3_IS_ENABLED_MODULE('vfs_delay_inject'),
                   install=False)
  
@@ -10,6 +95,7 @@
 +                 init_function='',
 +                 internal_module=bld.SAMBA3_IS_STATIC_MODULE('vfs_freebsd'),
 +                 enabled=bld.SAMBA3_IS_ENABLED_MODULE('vfs_freebsd'))
++
 +
  bld.SAMBA3_MODULE('vfs_widelinks',
                   subsystem='vfs',

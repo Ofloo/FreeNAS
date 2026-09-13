@@ -1,0 +1,11 @@
+--- lib/util/charset/wscript_build.orig	2026-01-01 00:00:00 UTC
++++ lib/util/charset/wscript_build
+@@ -6,7 +6,8 @@
+                     weird.c
+                     charset_macosxfs.c
+                     ''',
+-                    public_deps='iconv replace talloc ' +  bld.env['icu-libs'])
++                    deps=bld.env['icu-libs'],
++                    public_deps='iconv replace talloc')
+ 
+ bld.SAMBA_SUBSYSTEM('charset',

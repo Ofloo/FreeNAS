@@ -1,0 +1,52 @@
+--- source3/wscript.orig	2026-01-23 11:53:41.145240000 +0100
++++ source3/wscript	2026-09-13 09:32:43.490417000 +0200
+@@ -90,6 +90,10 @@
+     opt.samba_add_onoff_option('glusterfs', with_name="enable", without_name="disable", default=True)
+     opt.samba_add_onoff_option('cephfs', with_name="enable", without_name="disable", default=None)
+ 
++    opt.add_option('--with-libzfs',
++                   help='enable libZFS support',
++                   action='store_true', dest='with_libzfs', default=False)
++
+     opt.add_option('--enable-vxfs',
+                   help=("enable support for VxFS (default=no)"),
+                   action="store_true", dest='enable_vxfs', default=False)
+@@ -1673,6 +1677,26 @@
+             Logs.warn("acl support disabled or ceph_statx/ceph_openat not "
+                        "available, not building ceph vfs modules")
+ 
++    if Options.options.with_libzfs:
++        conf.DEFINE('HAVE_LIBZFS', '1')
++        if os.path.exists('/usr/local/include/libzfs/libzfs.h'):
++            conf.env['CPPPATH_ZFS'] = [
++                '/usr/local/include/libspl',
++                '/usr/local/include/libzfs',
++                '/usr/local/include/libzfs/sys',
++                '/usr/local/include/libzfs/sys/fs',
++            ]
++        elif os.path.exists('/usr/include/libzfs/libzfs.h'):
++            conf.env['CPPPATH_ZFS'] = [
++                '/usr/include/libspl',
++                '/usr/include/libzfs',
++                '/usr/include/libzfs/sys',
++                '/usr/include/libzfs/sys/fs',
++            ]
++        else:
++            Logs.error('No available ZFS headers')
++            conf.fatal('libzfs support requested but no headers found')
++
+     if Options.options.with_glusterfs:
+         conf.CHECK_CFG(package='glusterfs-api', args='"glusterfs-api >= 4" --cflags --libs',
+                        msg='Checking for glusterfs-api >= 4', uselib_store="GFAPI")
+@@ -1880,6 +1904,11 @@
+                                       'vfs_time_audit', 'vfs_offline', 'vfs_virusfilter', 'vfs_widelinks'])
+     if host_os.rfind('linux') > -1:
+         default_shared_modules.extend(['vfs_snapper'])
++
++    if conf.CONFIG_SET('HAVE_LIBZFS'):
++        default_shared_modules.extend(['vfs_zfs_core', 'vfs_zfs_space',
++                                       'vfs_shadow_copy_zfs', 'vfs_tmprotect',
++                                       'vfs_zfs_fsrvp', 'vfs_ixnas', 'vfs_aio_fbsd'])
+ 
+     default_shared_modules.extend(['idmap_tdb2', 'idmap_script'])
+     # these have broken dependencies

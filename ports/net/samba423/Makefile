@@ -21,7 +21,7 @@ IGNORE=				does not support bundling dependencies via ${bvar}; use option ${bvar
 BUILD_DEPENDS=			${_JANSSON_DEPENDS} \
 				${_LIBARCHIVE_DEPENDS} \
 				${_TASN1_DEPENDS} \
-				p5-Parse-Yapp>=0:devel/p5-Parse-Yapp
+				p5-Parse-Yapp>=0:devel/p5-Parse-Yapp openzfs>=0:filesystems/openzfs
 # Unconditional dependencies which can't be switched off if present:
 # - GnuTLS: libgnutls.so and libgcrypt.so
 # - Iconv
@@ -57,7 +57,7 @@ CPE_VENDOR=			samba
 CPE_PRODUCT=			samba
 USE_LDCONFIG=			${SAMBA_LIBDIR}
 USE_PERL5=			build
-USE_RC_SUBR=			samba_server
+USE_RC_SUBR=			samba_server smbd nmbd winbindd wsdd
 WAF_CMD=			buildtools/bin/waf
 # Make sure that the right version of Python is used by the tools
 # https://bugzilla.samba.org/show_bug.cgi?id=7305
@@ -98,6 +98,7 @@ CONFIGURE_ARGS+=		\
 				--without-systemd \
 				--with-libarchive \
 				--with-acl-support \
+				--with-libzfs \
 				--with-sendfile-support \
 				--disable-ctdb-tests \
 				--disable-spotlight
@@ -118,6 +119,7 @@ TEST_ENV=			PYTHON="${PYTHON_CMD}" \
 				PYTHONDONTWRITEBYTECODE=1
 
 # No fancy color error messages
+CFLAGS+=			-D_ACL_PRIVATE -D_FREEBSD_LIBZFS
 CFLAGS+=			${_CFLAGS_${CHOSEN_COMPILER_TYPE}}
 .ifnmake portclippy
 _CFLAGS_clang=			-fno-color-diagnostics
@@ -389,7 +391,9 @@ _SHARED_MODULES+=		vfs_acl_tdb vfs_acl_xattr vfs_aio_fork vfs_aio_pthread \
 				vfs_shadow_copy vfs_shadow_copy2 vfs_shell_snap \
 				vfs_streams_depot vfs_streams_xattr vfs_syncops \
 				vfs_time_audit vfs_unityed_media vfs_virusfilter \
-				vfs_widelinks vfs_worm vfs_xattr_tdb vfs_zfsacl
+				vfs_widelinks vfs_worm vfs_xattr_tdb vfs_zfsacl \
+				vfs_ixnas vfs_zfs_core vfs_zfs_space vfs_zfs_fsrvp \
+				vfs_shadow_copy_zfs vfs_tmprotect vfs_noacl vfs_aio_fbsd \
 
 _SAMBA_MAJVERNAME=		samba4
 _SAMBA_SUB=			PKGCONFIGDIR=${_PKGCONFIGDIR_REL} \
@@ -436,6 +440,17 @@ PLIST_FILES+=			${SAMBA_LIBDIR}/private/libldb-mdb-int-private-samba.so \
 .endif
 
 post-extract:
+	${CP} ${FILESDIR}/smb_libzfs.c ${FILESDIR}/smb_libzfs.h ${WRKSRC}/source3/modules/
+	${CP} ${FILESDIR}/vfs_aio_fbsd.c ${FILESDIR}/vfs_ixnas.c ${FILESDIR}/vfs_noacl.c \
+		${FILESDIR}/vfs_shadow_copy_zfs.c ${FILESDIR}/vfs_tmprotect.c \
+		${FILESDIR}/vfs_zfs_core.c ${FILESDIR}/vfs_zfs_fsrvp.c \
+		${FILESDIR}/vfs_zfs_space.c ${WRKSRC}/source3/modules/
+	${MKDIR} ${WRKSRC}/lib/zfsacl ${WRKSRC}/lib/zfsacl/ABI
+	${CP} ${FILESDIR}/zfsacl_impl_common.c ${FILESDIR}/zfsacl_impl_freebsd.c \
+		${FILESDIR}/zfsacl_impl_linux.c ${FILESDIR}/zfsacl.h \
+		${FILESDIR}/pyzfsacl.c ${WRKSRC}/lib/zfsacl/
+	${CP} ${FILESDIR}/zfsacl.wscript ${WRKSRC}/lib/zfsacl/wscript
+	${CP} ${FILESDIR}/zfsacl-abi.sigs ${WRKSRC}/lib/zfsacl/ABI/zfsacl-0.1.0.sigs
 	@${RM} -r ${WRKSRC}/pidl/lib/Parse/Yapp
 
 post-patch:

@@ -1,0 +1,10 @@
+--- wscript_build.orig	2026-01-23 11:53:43.321764500 +0100
++++ wscript_build	2026-09-13 09:32:43.573340000 +0200
+@@ -50,6 +50,7 @@
+ bld.RECURSE('lib/tdb')
+ bld.RECURSE('lib/ldb')
+ bld.RECURSE('lib/param')
++bld.RECURSE('lib/zfsacl')
+ bld.RECURSE('lib/printer_driver')
+ bld.RECURSE('lib/audit_logging')
+ bld.RECURSE('lib/messaging')

@@ -1,0 +1,10 @@
+--- lib/util/memcache.c.orig	2026-09-13 11:37:45.040163000 +0200
++++ lib/util/memcache.c	2026-09-13 11:37:45.061483000 +0200
+@@ -60,6 +60,7 @@
+ 	case SINGLETON_CACHE_TALLOC:
+ 	case SHARE_MODE_LOCK_CACHE:
+ 	case GETWD_CACHE:
++	case ZFS_CACHE:
+ 	case VIRUSFILTER_SCAN_RESULTS_CACHE_TALLOC:
+ 		result = true;
+ 		break;
