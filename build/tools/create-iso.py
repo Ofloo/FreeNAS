@@ -286,6 +286,11 @@ def install_ports():
     chroot('${INSTUFS_DESTDIR}', 'env ASSUME_ALWAYS_YES=yes pkg install -r local -f ${pkgs}')
     sh('umount -f ${INSTUFS_DESTDIR}/dev')
 
+    # FreeBSD 15.1 replaced base dialog(1) with bsddialog(1), but the
+    # TrueNAS installer (etc/install.sh) still invokes `dialog`. The
+    # cdialog port provides a drop-in compatible binary.
+    sh('ln -sf cdialog ${INSTUFS_DESTDIR}/usr/local/bin/dialog')
+
 
 def install_pkgtools():
     info('Installing freenas-pkgtools')
